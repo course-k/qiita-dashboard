@@ -28,8 +28,11 @@ export default function HeatmapChart() {
             endDate={today}
             values={data}
             classForValue={value => {
-              if (!value || value.count === 0) return 'color-empty'
-              return `color-scale-${Math.min(value.count, 4)}`
+              if (!value || (value as HeatmapPoint).count === 0) return 'color-empty'
+              const count = (value as HeatmapPoint).count
+              if (count >= 3) return 'color-scale-4'
+              if (count === 2) return 'color-scale-2'
+              return 'color-scale-1'
             }}
             tooltipDataAttrs={(value: ReactCalendarHeatmapValue<string> | undefined) => {
               const v = value as HeatmapPoint | undefined

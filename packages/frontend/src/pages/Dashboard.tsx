@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [summary, setSummary] = useState<Summary | null>(null)
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null)
-  const [from, setFrom] = useState('')
+  const [from, setFrom] = useState(`${new Date().getFullYear()}-01`)
   const [to, setTo] = useState('')
   const [syncing, setSyncing] = useState(false)
 
