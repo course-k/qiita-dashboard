@@ -1,9 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import dotenv from 'dotenv'
 import path from 'path'
-
-dotenv.config()
 
 import { initDb } from './db/schema'
 import { startScheduler } from './cron/scheduler'
