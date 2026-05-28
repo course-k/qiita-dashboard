@@ -53,10 +53,8 @@ export default function ArticleTable({ articles, sort, order, onSort }: Props) {
                   >
                     {article.title}
                   </a>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {article.created_at.slice(0, 10)}
-                  </p>
                 </td>
+                <td className="px-4 py-3 text-right text-gray-500 whitespace-nowrap">{article.created_at.slice(0, 10)}</td>
                 <td className="px-4 py-3 text-right text-gray-700">{article.likes_count.toLocaleString()}</td>
                 <td className="px-4 py-3 text-right text-gray-700">{article.stocks_count.toLocaleString()}</td>
                 <td className="px-4 py-3 text-right text-gray-700">{article.page_views_count.toLocaleString()}</td>
