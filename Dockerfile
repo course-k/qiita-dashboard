@@ -1,5 +1,5 @@
 # Stage 1: フロントエンドビルド
-FROM node:20-alpine AS frontend-builder
+FROM node:24-alpine AS frontend-builder
 WORKDIR /app
 COPY package.json ./
 COPY packages/frontend/package.json ./packages/frontend/
@@ -8,7 +8,7 @@ COPY packages/frontend ./packages/frontend
 RUN npm run build -w packages/frontend
 
 # Stage 2: バックエンドビルド
-FROM node:20-alpine AS backend-builder
+FROM node:24-alpine AS backend-builder
 WORKDIR /app
 COPY package.json ./
 COPY packages/backend/package.json ./packages/backend/
@@ -17,7 +17,7 @@ COPY packages/backend ./packages/backend
 RUN npm run build -w packages/backend
 
 # Stage 3: 本番イメージ
-FROM node:20-alpine
+FROM node:24-alpine
 WORKDIR /app
 
 COPY package.json ./
