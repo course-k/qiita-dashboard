@@ -1,5 +1,5 @@
 import { getDb } from '../db/schema'
-import { fetchAllItems, fetchLikes, fetchStockers } from './qiita'
+import { fetchAllItems, fetchLikes } from './qiita'
 
 function toDateString(date: Date): string {
   return date.toISOString().slice(0, 10)
@@ -84,10 +84,9 @@ export async function runSync(full = false): Promise<void> {
       throw e
     }
 
-    // 3. いいね・ストックイベント同期
+    // 3. いいねイベント同期（ストックはAPI上で日時が取得できないため対象外）
     for (const item of items) {
       await syncLikes(item.id, mode)
-      await syncStocks(item.id, mode)
     }
 
     setSyncState('last_synced_at', now)
@@ -116,34 +115,6 @@ async function syncLikes(articleId: string, mode: string): Promise<void> {
     try {
       for (const like of likes) {
         upsert.run(articleId, like.user.id, like.created_at)
-      }
-      db.exec('COMMIT')
-    } catch (e) {
-      db.exec('ROLLBACK')
-      throw e
-    }
-  }
-}
-
-async function syncStocks(articleId: string, mode: string): Promise<void> {
-  const db = getDb()
-  const upsert = db.prepare(`
-    INSERT OR IGNORE INTO stock_events (article_id, user_id, created_at)
-    VALUES (?, ?, ?)
-  `)
-  const stockers = await fetchStockers(articleId)
-
-  if (mode === 'incremental') {
-    const exists = db.prepare('SELECT 1 FROM stock_events WHERE article_id = ? AND user_id = ?')
-    for (const stocker of stockers) {
-      if (exists.get(articleId, stocker.id)) break
-      upsert.run(articleId, stocker.id, stocker.created_at ?? new Date().toISOString())
-    }
-  } else {
-    db.exec('BEGIN')
-    try {
-      for (const stocker of stockers) {
-        upsert.run(articleId, stocker.id, stocker.created_at ?? new Date().toISOString())
       }
       db.exec('COMMIT')
     } catch (e) {

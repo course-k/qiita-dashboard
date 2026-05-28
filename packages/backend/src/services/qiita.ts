@@ -4,7 +4,7 @@ export interface QiitaUser {
   id: string
   name: string
   description: string
-  image_url: string
+  profile_image_url: string
   items_count: number
   followers_count: number
   followees_count: number
@@ -26,11 +26,6 @@ export interface QiitaItem {
 export interface QiitaLike {
   created_at: string
   user: { id: string }
-}
-
-export interface QiitaStocker {
-  id: string
-  // stockers endpoint returns user objects; created_at may vary by API version
 }
 
 const client: AxiosInstance = axios.create({
@@ -69,6 +64,3 @@ export async function fetchLikes(itemId: string): Promise<QiitaLike[]> {
   return fetchAllPages<QiitaLike>(`/items/${itemId}/likes`)
 }
 
-export async function fetchStockers(itemId: string): Promise<Array<{ id: string; created_at?: string }>> {
-  return fetchAllPages(`/items/${itemId}/stockers`)
-}

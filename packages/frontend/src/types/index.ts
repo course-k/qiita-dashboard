@@ -2,7 +2,7 @@ export interface Profile {
   id: string
   name: string
   description: string
-  image_url: string
+  profile_image_url: string
   items_count: number
   followers_count: number
   followees_count: number
@@ -49,6 +49,6 @@ export interface SyncStatus {
   lastSyncedAt: string | null
 }
 
-export type TrendMetric = 'likes' | 'stocks' | 'pv'
+export type TrendMetric = 'likes'
 export type ArticleSortColumn = 'created_at' | 'likes_count' | 'stocks_count' | 'page_views_count' | 'likes_rate' | 'stocks_rate'
 export type RankingMetric = 'likes_count' | 'stocks_count' | 'page_views_count' | 'likes_rate' | 'stocks_rate'

@@ -39,13 +39,6 @@ export function initDb(): void {
       PRIMARY KEY (article_id, user_id)
     );
 
-    CREATE TABLE IF NOT EXISTS stock_events (
-      article_id TEXT NOT NULL,
-      user_id TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      PRIMARY KEY (article_id, user_id)
-    );
-
     CREATE TABLE IF NOT EXISTS pv_snapshots (
       article_id TEXT NOT NULL,
       snapshot_date TEXT NOT NULL,
