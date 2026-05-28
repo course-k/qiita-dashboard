@@ -1,0 +1,16 @@
+node_modules/
+dist/
+
+# SQLiteデータベース（個人データ含む）
+packages/backend/data/
+*.db
+*.sqlite
+
+# 環境変数・APIトークン
+packages/backend/.env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store

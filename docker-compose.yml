@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./packages/backend/data:/app/packages/backend/data
+    env_file:
+      - ./packages/backend/.env
+    restart: always
