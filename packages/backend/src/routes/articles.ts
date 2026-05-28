@@ -5,6 +5,14 @@ const router = Router()
 
 type SortColumn = 'created_at' | 'likes_count' | 'stocks_count' | 'page_views_count' | 'likes_rate' | 'stocks_rate'
 
+function toFromDate(value: string): string {
+  return value.length === 7 ? `${value}-01` : value
+}
+
+function toToDate(value: string): string {
+  return value.length === 7 ? `${value}-31T23:59:59` : `${value}T23:59:59`
+}
+
 // 記事一覧: 投稿日フィルター・ソート対応
 router.get('/', (req, res) => {
   const db = getDb()
@@ -29,8 +37,8 @@ router.get('/', (req, res) => {
 
   const conditions: string[] = []
   const params: string[] = []
-  if (from) { conditions.push('created_at >= ?'); params.push(from) }
-  if (to) { conditions.push('created_at <= ?'); params.push(`${to}T23:59:59`) }
+  if (from) { conditions.push('created_at >= ?'); params.push(toFromDate(from)) }
+  if (to) { conditions.push('created_at <= ?'); params.push(toToDate(to)) }
 
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
 

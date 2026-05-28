@@ -40,7 +40,7 @@ export default function Articles() {
           to={to}
           onFromChange={setFrom}
           onToChange={setTo}
-          type="date"
+          type="month"
         />
         <p className="text-sm text-gray-500">{articles.length}件</p>
       </div>
