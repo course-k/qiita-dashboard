@@ -13,7 +13,7 @@ router.post('/', async (_req, res) => {
     return res.status(409).json({ error: 'Sync already in progress' })
   }
   // 非同期で実行しレスポンスはすぐ返す
-  runSync(true).catch(err => console.error('Sync error:', err))
+  runSync(true).catch(err => console.error('Sync error:', err instanceof Error ? err.message : err))
   res.json({ message: 'Sync started' })
 })
 

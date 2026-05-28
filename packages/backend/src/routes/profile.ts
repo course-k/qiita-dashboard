@@ -8,7 +8,7 @@ router.get('/', async (_req, res) => {
     const user = await fetchAuthenticatedUser()
     res.json(user)
   } catch (err) {
-    console.error(err)
+    console.error('Failed to fetch profile:', err instanceof Error ? err.message : err)
     res.status(500).json({ error: 'Failed to fetch profile' })
   }
 })

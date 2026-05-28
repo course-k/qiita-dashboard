@@ -8,7 +8,7 @@ export default function ProfileCard({ profile }: Props) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
       <img
-        src={profile.image_url}
+        src={profile.profile_image_url}
         alt={profile.name}
         className="w-14 h-14 rounded-full"
       />
