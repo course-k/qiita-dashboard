@@ -15,12 +15,29 @@ export default function Dashboard() {
   const [from, setFrom] = useState(`${new Date().getFullYear()}-01`)
   const [to, setTo] = useState('')
   const [syncing, setSyncing] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [toast, setToast] = useState('')
 
   useEffect(() => {
-    api.getProfile().then(setProfile)
-    api.getSummary().then(setSummary)
-    api.getSyncStatus().then(setSyncStatus)
+    loadDashboardData()
   }, [])
+
+  useEffect(() => {
+    if (!toast) return
+    const timer = window.setTimeout(() => setToast(''), 3000)
+    return () => window.clearTimeout(timer)
+  }, [toast])
+
+  async function loadDashboardData() {
+    const [nextProfile, nextSummary, nextStatus] = await Promise.allSettled([
+      api.getProfile(),
+      api.getSummary(),
+      api.getSyncStatus(),
+    ])
+    if (nextProfile.status === 'fulfilled') setProfile(nextProfile.value)
+    if (nextSummary.status === 'fulfilled') setSummary(nextSummary.value)
+    if (nextStatus.status === 'fulfilled') setSyncStatus(nextStatus.value)
+  }
 
   async function handleSync() {
     setSyncing(true)
@@ -33,7 +50,9 @@ export default function Dashboard() {
         if (!status.syncing) {
           clearInterval(poll)
           setSyncing(false)
-          api.getSummary().then(setSummary)
+          await loadDashboardData()
+          setRefreshKey(key => key + 1)
+          setToast('同期が完了しました')
         }
       }, 2000)
     } catch {
@@ -61,6 +80,12 @@ export default function Dashboard() {
         </button>
       </div>
 
+      {syncStatus && !syncStatus.lastSyncedAt && !syncStatus.syncing && (
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          まず同期を実行してください
+        </div>
+      )}
+
       {/* プロフィール */}
       {profile && <ProfileCard profile={profile} />}
 
@@ -79,11 +104,17 @@ export default function Dashboard() {
 
       {/* グラフ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TrendChart from={from} to={to} />
-        <PVTrendChart />
+        <TrendChart from={from} to={to} refreshKey={refreshKey} />
+        <PVTrendChart refreshKey={refreshKey} />
       </div>
 
-      <HeatmapChart />
+      <HeatmapChart refreshKey={refreshKey} />
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 rounded-lg bg-gray-900 px-4 py-3 text-sm text-white shadow-lg">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }

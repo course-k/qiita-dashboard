@@ -3,13 +3,18 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { api } from '../api/client'
 import type { PVTrendResponse } from '../types'
 
-export default function PVTrendChart() {
+interface Props {
+  refreshKey: number
+}
+
+export default function PVTrendChart({ refreshKey }: Props) {
   const [result, setResult] = useState<PVTrendResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     api.getPVTrend().then(setResult).finally(() => setLoading(false))
-  }, [])
+  }, [refreshKey])
 
   if (loading) {
     return (

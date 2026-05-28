@@ -6,9 +6,10 @@ import type { TrendPoint } from '../types'
 interface Props {
   from: string
   to: string
+  refreshKey: number
 }
 
-export default function TrendChart({ from, to }: Props) {
+export default function TrendChart({ from, to, refreshKey }: Props) {
   const [data, setData] = useState<TrendPoint[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -17,7 +18,7 @@ export default function TrendChart({ from, to }: Props) {
     api.getTrend('likes', from || undefined, to || undefined)
       .then(setData)
       .finally(() => setLoading(false))
-  }, [from, to])
+  }, [from, to, refreshKey])
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">

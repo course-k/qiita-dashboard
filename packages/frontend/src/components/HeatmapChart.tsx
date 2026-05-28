@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react'
 import CalendarHeatmap from 'react-calendar-heatmap'
 import type { ReactCalendarHeatmapValue, TooltipDataAttrs } from 'react-calendar-heatmap'
+import { Tooltip } from 'react-tooltip'
 import 'react-calendar-heatmap/dist/styles.css'
 import { api } from '../api/client'
 import type { HeatmapPoint } from '../types'
 
-export default function HeatmapChart() {
+interface Props {
+  refreshKey: number
+}
+
+export default function HeatmapChart({ refreshKey }: Props) {
   const [data, setData] = useState<HeatmapPoint[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     api.getHeatmap().then(setData).finally(() => setLoading(false))
-  }, [])
+  }, [refreshKey])
 
   const today = new Date()
   const startDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
@@ -36,9 +42,13 @@ export default function HeatmapChart() {
             }}
             tooltipDataAttrs={(value: ReactCalendarHeatmapValue<string> | undefined) => {
               const v = value as HeatmapPoint | undefined
-              return (v?.date ? { 'data-tip': `${v.date}: ${v.count}件` } : {}) as TooltipDataAttrs
+              return (v?.date ? {
+                'data-tooltip-id': 'heatmap-tooltip',
+                'data-tooltip-content': `${v.date}: ${v.count}件`,
+              } : {}) as TooltipDataAttrs
             }}
           />
+          <Tooltip id="heatmap-tooltip" place="top" />
         </div>
       )}
     </div>
