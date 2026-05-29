@@ -3,6 +3,39 @@ import { getDb } from '../db/schema'
 
 const router = Router()
 
+interface HeatmapDay {
+  date: string
+  count: number
+}
+
+interface HeatmapWeek {
+  weekStart: string
+  weekEnd: string
+  count: number
+  days: HeatmapDay[]
+}
+
+function formatDate(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
+function parseDate(date: string): Date {
+  const [year, month, day] = date.split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
+function addDays(date: Date, days: number): Date {
+  const next = new Date(date)
+  next.setUTCDate(next.getUTCDate() + days)
+  return next
+}
+
+function getMonday(date: Date): Date {
+  const day = date.getUTCDay()
+  const diff = day === 0 ? -6 : 1 - day
+  return addDays(date, diff)
+}
+
 // サマリー: 全期間の累計
 router.get('/summary', (_req, res) => {
   const db = getDb()
@@ -59,19 +92,42 @@ router.get('/pv-trend', (_req, res) => {
   res.json({ status: 'ok', data: rows })
 })
 
-// 投稿頻度ヒートマップ用: 日付ごとの投稿数
+// 投稿頻度ヒートマップ用: 月曜始まりの週別投稿数と日別内訳
 router.get('/heatmap', (_req, res) => {
   const db = getDb()
-  const rows = db.prepare(`
-    SELECT
-      DATE(created_at) as date,
-      COUNT(*) as count
-    FROM articles
-    GROUP BY DATE(created_at)
-    ORDER BY date
-  `).all() as Array<{ date: string; count: number }>
+  const rows = db.prepare('SELECT created_at FROM articles').all() as Array<{ created_at: string }>
+  const currentWeekStart = getMonday(parseDate(formatDate(new Date())))
+  const firstWeekStart = addDays(currentWeekStart, -52 * 7)
+  const weeks = new Map<string, HeatmapWeek>()
 
-  res.json(rows)
+  for (let i = 0; i <= 52; i += 1) {
+    const weekStartDate = addDays(firstWeekStart, i * 7)
+    const weekStart = formatDate(weekStartDate)
+    weeks.set(weekStart, {
+      weekStart,
+      weekEnd: formatDate(addDays(weekStartDate, 6)),
+      count: 0,
+      days: Array.from({ length: 7 }, (_, dayIndex) => ({
+        date: formatDate(addDays(weekStartDate, dayIndex)),
+        count: 0,
+      })),
+    })
+  }
+
+  for (const row of rows) {
+    const date = row.created_at.slice(0, 10)
+    const weekStart = formatDate(getMonday(parseDate(date)))
+    const week = weeks.get(weekStart)
+    if (!week) continue
+
+    const day = week.days.find(item => item.date === date)
+    if (!day) continue
+
+    day.count += 1
+    week.count += 1
+  }
+
+  res.json({ weeks: Array.from(weeks.values()) })
 })
 
 export default router

@@ -25,9 +25,20 @@ export interface PVTrendResponse {
   data: Array<{ date: string; total_pv: number }>
 }
 
-export interface HeatmapPoint {
+export interface HeatmapDay {
   date: string
   count: number
+}
+
+export interface HeatmapWeek {
+  weekStart: string
+  weekEnd: string
+  count: number
+  days: HeatmapDay[]
+}
+
+export interface HeatmapResponse {
+  weeks: HeatmapWeek[]
 }
 
 export interface Article {

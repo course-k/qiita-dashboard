@@ -1,6 +1,6 @@
 import type {
   Profile, Summary, TrendPoint, PVTrendResponse,
-  HeatmapPoint, Article, SyncStatus, TrendMetric,
+  HeatmapResponse, Article, SyncStatus, TrendMetric,
   ArticleSortColumn, RankingMetric,
 } from '../types'
 
@@ -30,7 +30,7 @@ export const api = {
 
   getPVTrend: () => get<PVTrendResponse>('/api/stats/pv-trend'),
 
-  getHeatmap: () => get<HeatmapPoint[]>('/api/stats/heatmap'),
+  getHeatmap: () => get<HeatmapResponse>('/api/stats/heatmap'),
 
   getArticles: (params: {
     from?: string
