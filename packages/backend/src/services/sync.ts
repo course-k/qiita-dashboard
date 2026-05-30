@@ -68,14 +68,14 @@ export async function runSync(full = false): Promise<void> {
 
     // 2. PVスナップショット保存
     const upsertPv = db.prepare(`
-      INSERT OR IGNORE INTO pv_snapshots (article_id, snapshot_date, pv_count)
-      VALUES (?, ?, ?)
+      INSERT OR IGNORE INTO pv_snapshots (article_id, snapshot_date, pv_count, captured_at)
+      VALUES (?, ?, ?, ?)
     `)
     db.exec('BEGIN')
     try {
       for (const item of items) {
         if (item.page_views_count !== null) {
-          upsertPv.run(item.id, today, item.page_views_count)
+          upsertPv.run(item.id, today, item.page_views_count, now)
         }
       }
       db.exec('COMMIT')

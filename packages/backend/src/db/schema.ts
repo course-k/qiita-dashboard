@@ -43,6 +43,7 @@ export function initDb(): void {
       article_id TEXT NOT NULL,
       snapshot_date TEXT NOT NULL,
       pv_count INTEGER NOT NULL,
+      captured_at TEXT,
       PRIMARY KEY (article_id, snapshot_date)
     );
 
@@ -51,6 +52,11 @@ export function initDb(): void {
       value TEXT NOT NULL
     );
   `)
+
+  const pvSnapshotColumns = db.prepare('PRAGMA table_info(pv_snapshots)').all() as Array<{ name: string }>
+  if (!pvSnapshotColumns.some(column => column.name === 'captured_at')) {
+    db.exec('ALTER TABLE pv_snapshots ADD COLUMN captured_at TEXT')
+  }
 
   console.log('Database initialized')
 }
